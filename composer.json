@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Fortnite\\": "src/Fortnite"
+    }
+  },
+  "require": {
+    "tustin/fortnite-php": "^0.0.6"
+  }
+}
