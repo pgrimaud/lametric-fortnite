@@ -4,11 +4,13 @@
 
 # How it works ?
 
-- Launch your [LaMetric app](https://apps.lametric.com/apps/fortnite/6390)
-- Install the app "Fortnite"
+- Launch your LaMetric app
+- Install the app ["Fortnite"](https://apps.lametric.com/apps/fortnite/6390)
 - Configure parameters
 
 ![LaMetric Fortnite](https://raw.githubusercontent.com/pgrimaud/lametric-fortnite/master/images/fortnite-app.png)
+
+![LaMetric Fortnite GIF](https://raw.githubusercontent.com/pgrimaud/lametric-fortnite/master/images/fortnite.gif)
 
 # Feedback
 
