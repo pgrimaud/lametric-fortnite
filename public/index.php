@@ -1,34 +1,32 @@
 <?php
 
-use Fortnite\Auth;
+use Fortnite\Api;
+use Fortnite\Response;
+use Fortnite\Validator;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$credentialsFile = __DIR__ . '/../config/credentials.php';
+try {
 
-if (is_file($credentialsFile)) {
-    $credentials = require __DIR__ . '/../config/credentials.php';
+    $validator = new Validator($_GET);
+    $validator->check();
 
-    echo '{
-    "frames": [
-        {
-            "text": "ortnite",
-            "icon": "i20640"
-        }
-    ]
-}';
+    $api   = new Api($validator);
+    $sdata = $api->getStatistics();
 
-//    $auth = Auth::login($credentials['email'], $credentials['password']);
-//
-//    $user = 'Nilzèn';
-//    //$user = 'ZiiKoO';
-//
-//    $sandy = $auth->profile->stats->lookup($user);
-//
-//    print_r($sandy);
-//
-//    echo $user . ' has won ' . $sandy->pc->solo->wins . ' solo games, ' . $sandy->pc->duo->wins . ' duo games and ' . $sandy->pc->squad->wins . ' squad games!';
+    /* $auth = Auth::login($credentials['email'], $credentials['password']);
 
-} else {
-    throw new \Fortnite\Exception\ConfigException('Missing config file');
+    $user = 'Nilzèn';
+    //$user = 'ZiiKoO';
+
+    $sandy = $auth->profile->stats->lookup($user);
+
+    print_r($sandy);
+
+    echo $user . ' has won ' . $sandy->pc->solo->wins . ' solo games, ' . $sandy->pc->duo->wins . ' duo games and ' . $sandy->pc->squad->wins . ' squad games!';
+    */
+
+} Catch (Exception $e) {
+    $response = new Response();
+    echo $response->returnError($e->getMessage());
 }
