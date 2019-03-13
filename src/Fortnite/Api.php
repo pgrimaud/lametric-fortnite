@@ -13,7 +13,7 @@ class Api
     const PLATFORMS = [
         'PC'    => 'pc',
         'Xbox1' => 'xb1',
-        'PS4'   => 'ps4',
+        'PS4'   => 'psn',
     ];
 
     const MODS = [
@@ -55,10 +55,12 @@ class Api
      */
     public function fetchData()
     {
+        $platform = self::PLATFORMS[$this->validator->getParameters()['platform']];
+
         try {
 
             $endpoint = 'https://api.fortnitetracker.com/v1/profile/' .
-                $this->validator->getParameters()['platform'] . '/' .
+                $platform . '/' .
                 $this->validator->getParameters()['player'];
 
             $client = new Client();
