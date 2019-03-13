@@ -5,6 +5,7 @@ namespace Fortnite;
 use Fortnite\Exception\ConfigException;
 use Fortnite\Exception\InternalErrorException;
 use Fortnite\Exception\MissingParameterException;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Api
@@ -55,9 +56,22 @@ class Api
     public function fetchData()
     {
         try {
-            $auth = Auth::login($this->credentials['email'], $this->credentials['password']);
-            /** @var Stats $data */
-            $data = $auth->profile->stats->lookup($this->validator->getParameters()['player']);
+
+            $endpoint = 'https://api.fortnitetracker.com/v1/profile/' .
+                $this->validator->getParameters()['platform'] . '/' .
+                $this->validator->getParameters()['player'];
+
+            $client = new Client();
+            $res    = $client->request('GET', $endpoint, [
+                'headers' => [
+                    'TRN-Api-Key' => $this->credentials['api-key'],
+                ]
+            ]);
+
+            $data = (string)$res->getBody();
+            print_r($data);
+            exit;
+
         } catch (\Exception $e) {
             throw new MissingParameterException($e->getMessage());
         } catch (GuzzleException $e) {
@@ -68,10 +82,10 @@ class Api
     }
 
     /**
-     * @param Stats $data
+     * @param $data
      * @return array
      */
-    private function formatData(Stats $data)
+    private function formatData($data)
     {
         $dataToReturn = [
             'name'           => $data->display_name,
@@ -102,10 +116,10 @@ class Api
         // set values
         $dataToReturn['wins']    .= ' WINS';
         $dataToReturn['kd']      = round(
-            $dataToReturn['kills'] /
-            ($dataToReturn['matches_played'] - $dataToReturn['wins']),
-            2
-        ) . ' K/D';
+                $dataToReturn['kills'] /
+                ($dataToReturn['matches_played'] - $dataToReturn['wins']),
+                2
+            ) . ' K/D';
         $dataToReturn['winrate'] = round(($dataToReturn['wins'] / $dataToReturn['matches_played']) * 100, 2) . '%';
 
         return $dataToReturn;

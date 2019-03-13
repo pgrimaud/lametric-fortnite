@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60238b404cdd29a5ad5c1d0daf0a32f2",
+    "content-hash": "55f6c2e4bd979a78cd8c3aa41dfe6691",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -278,43 +278,6 @@
             ],
             "description": "A polyfill for getallheaders.",
             "time": "2016-02-11T07:05:27+00:00"
-        },
-        {
-            "name": "tustin/fortnite-php",
-            "version": "0.0.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Tustin/fortnite-php.git",
-                "reference": "58a1f7c94eb3c41c8bbb4b07abc4d744bbb5dce8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Tustin/fortnite-php/zipball/58a1f7c94eb3c41c8bbb4b07abc4d744bbb5dce8",
-                "reference": "58a1f7c94eb3c41c8bbb4b07abc4d744bbb5dce8",
-                "shasum": ""
-            },
-            "require": {
-                "guzzlehttp/guzzle": "^6.3",
-                "php": "^7.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "PHP wrapper for the official Fortnite API.",
-            "homepage": "https://github.com/Tustin/fortnite-php",
-            "keywords": [
-                "Fortnite",
-                "api",
-                "php"
-            ],
-            "time": "2018-12-12T01:03:54+00:00"
         }
     ],
     "packages-dev": [],
