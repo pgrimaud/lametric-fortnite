@@ -17,9 +17,9 @@ class Api
     ];
 
     const MODS = [
-        'solo',
-        'duo',
-        'squad',
+        'solo'  => 'p2',
+        'duo'   => 'p10',
+        'squad' => 'p9',
     ];
 
     /**
@@ -70,9 +70,8 @@ class Api
                 ]
             ]);
 
-            $data = (string)$res->getBody();
-            print_r($data);
-            exit;
+            $json = (string)$res->getBody();
+            $data = json_decode($json);
 
         } catch (\Exception $e) {
             throw new MissingParameterException($e->getMessage());
@@ -90,7 +89,7 @@ class Api
     private function formatData($data)
     {
         $dataToReturn = [
-            'name'           => $data->display_name,
+            'name'           => $data->epicUserHandle,
             'wins'           => 0,
             'kills'          => 0,
             'matches_played' => 0,
@@ -100,18 +99,18 @@ class Api
 
         $modsToFetch = [];
 
-        foreach (self::MODS as $mod) {
+        foreach (self::MODS as $mod => $apiMod) {
             // Lametric switch values (true / false)...
             if ($this->validator->getParameters()['include' . ucwords($mod)] === 'true') {
-                $modsToFetch[] = $mod;
+                $modsToFetch[] = $apiMod;
             }
         }
 
         foreach ($modsToFetch as $mod) {
             if ($this->validator->getParameters()['include' . ucwords($mod)] && count($data->{$platform}->{$mod})) {
-                $dataToReturn['wins']           += $data->{$platform}->{$mod}->wins;
-                $dataToReturn['kills']          += $data->{$platform}->{$mod}->kills;
-                $dataToReturn['matches_played'] += $data->{$platform}->{$mod}->matches_played;
+                $dataToReturn['wins']           += $data->stats->{$mod}->top1->valueInt;
+                $dataToReturn['kills']          += $data->stats->{$mod}->kills->valueInt;
+                $dataToReturn['matches_played'] += $data->stats->{$mod}->matches->valueInt;
             }
         }
 
