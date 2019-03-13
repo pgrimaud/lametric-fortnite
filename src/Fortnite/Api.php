@@ -95,8 +95,6 @@ class Api
             'matches_played' => 0,
         ];
 
-        $platform = self::PLATFORMS[$this->validator->getParameters()['platform']];
-
         $modsToFetch = [];
 
         foreach (self::MODS as $mod => $apiMod) {
@@ -106,11 +104,18 @@ class Api
             }
         }
 
-        foreach ($modsToFetch as $mod) {
-            if ($this->validator->getParameters()['include' . ucwords($mod)] && count($data->{$platform}->{$mod})) {
-                $dataToReturn['wins']           += $data->stats->{$mod}->top1->valueInt;
-                $dataToReturn['kills']          += $data->stats->{$mod}->kills->valueInt;
-                $dataToReturn['matches_played'] += $data->stats->{$mod}->matches->valueInt;
+        foreach (self::MODS as $mod => $apiMod) {
+            // Lametric switch values (true / false)...
+            if ($this->validator->getParameters()['include' . ucwords($mod)] === 'true') {
+                $modsToFetch[$mod] = $apiMod;
+            }
+        }
+
+        foreach ($modsToFetch as $mod => $apiMod) {
+            if ($this->validator->getParameters()['include' . ucwords($mod)] && count($data->stats->{$apiMod})) {
+                $dataToReturn['wins']           += $data->stats->{$apiMod}->top1->valueInt;
+                $dataToReturn['kills']          += $data->stats->{$apiMod}->kills->valueInt;
+                $dataToReturn['matches_played'] += $data->stats->{$apiMod}->matches->valueInt;
             }
         }
 
