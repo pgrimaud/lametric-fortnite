@@ -12,7 +12,7 @@ class Api
 {
     const PLATFORMS = [
         'PC'    => 'pc',
-        'Xbox1' => 'xb1',
+        'Xbox1' => 'xbl',
         'PS4'   => 'psn',
     ];
 
