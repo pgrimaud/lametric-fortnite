@@ -1,4 +1,4 @@
 vendor
 build
-config/credentials.php
+config/parameters.php
 .php_cs.cache

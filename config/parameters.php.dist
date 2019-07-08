@@ -2,4 +2,5 @@
 
 return [
     'api-key' => 'xxxxx-xxxxx-xxxxx-xxxxx',
+    'proxies' => []
 ];

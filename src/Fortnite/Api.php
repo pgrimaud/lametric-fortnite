@@ -25,7 +25,7 @@ class Api
     /**
      * @var array
      */
-    private $credentials;
+    private $parameters;
 
     /**
      * @var Validator
@@ -39,10 +39,10 @@ class Api
      */
     public function __construct(Validator $validator)
     {
-        if (!is_file(__DIR__ . '/../../config/credentials.php')) {
-            throw new ConfigException('Internal error: missing config file');
+        if (!is_file(__DIR__ . '/../../config/parameters.php')) {
+            throw new ConfigException('Internal error: missing parameter file');
         } else {
-            $this->credentials = require __DIR__ . '/../../config/credentials.php';
+            $this->parameters = require __DIR__ . '/../../config/parameters.php';
         }
 
         $this->validator = $validator;
@@ -66,8 +66,9 @@ class Api
             $client = new Client();
             $res    = $client->request('GET', $endpoint, [
                 'headers' => [
-                    'TRN-Api-Key' => $this->credentials['api-key'],
-                ]
+                    'TRN-Api-Key' => $this->parameters['api-key'],
+                ],
+                'proxy'   => $this->parameters['proxies']
             ]);
 
             $json = (string)$res->getBody();
