@@ -1,5 +1,7 @@
 # Fortnite stats for LaMetric
 
+fortnite c pas ouf
+
 ![LaMetric Fortnite](https://raw.githubusercontent.com/pgrimaud/lametric-fortnite/master/images/fortnite.png)
 
 # How it works ?
