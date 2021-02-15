@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fortnite;
 
 use Fortnite\Exception\MissingParameterException;
@@ -9,21 +11,20 @@ class Validator
     /**
      * @var array
      */
-    private $parameters = [];
+    private array $parameters = [];
 
     /**
      * @var array
      */
-    private $mandatoryParameters = [
+    private array $mandatoryParameters = [
         'platform',
-        'player'
+        'player',
     ];
 
     /**
-     * Validator constructor.
-     * @param $parameters
+     * @param array $parameters
      */
-    public function __construct($parameters)
+    public function __construct(array $parameters = [])
     {
         $this->parameters = $parameters;
     }
@@ -31,7 +32,7 @@ class Validator
     /**
      * @throws MissingParameterException
      */
-    public function check()
+    public function check(): void
     {
         foreach ($this->mandatoryParameters as $parameter) {
             if (empty($this->parameters[$parameter])) {
@@ -43,7 +44,7 @@ class Validator
     /**
      * @return array
      */
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }

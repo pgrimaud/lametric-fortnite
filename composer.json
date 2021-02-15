@@ -5,7 +5,9 @@
     }
   },
   "require": {
+    "php": ">=8.0",
     "ext-json": "*",
-    "guzzlehttp/guzzle": "^6.3"
+    "guzzlehttp/guzzle": "^6.3",
+    "sentry/sdk": "^3.1"
   }
 }

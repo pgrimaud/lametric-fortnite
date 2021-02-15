@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Fortnite;
 
 class Response
@@ -21,37 +23,38 @@ class Response
     }
 
     /**
-     * @param null $text
+     * @param string|null $text
      * @return string
      */
-    public function returnError($text = null)
+    public function returnError(string $text = null): string
     {
         return $this->asJson([
             'frames' => [
                 [
                     'index' => 0,
                     'text'  => $text ?: 'Please check app configuration',
-                    'icon'  => self::ICON
-                ]
-            ]
+                    'icon'  => self::ICON,
+                ],
+            ],
         ]);
     }
 
     /**
      * @param Validator $validator
-     * @param $data
+     * @param array $data
+     *
      * @return string
      */
-    public function returnData(Validator $validator, $data)
+    public function returnData(Validator $validator, array $data): string
     {
         $frames = [
             'frames' => [
                 [
                     'index' => 0,
                     'text'  => $data['name'],
-                    'icon'  => self::ICON
-                ]
-            ]
+                    'icon'  => self::ICON,
+                ],
+            ],
         ];
 
         $frameNumber = 1;
@@ -61,7 +64,7 @@ class Response
                 $frames['frames'][] = [
                     'index' => $frameNumber,
                     'text'  => $data[$showOption],
-                    'icon'  => self::ICON
+                    'icon'  => self::ICON,
                 ];
 
                 $frameNumber++;
@@ -73,10 +76,11 @@ class Response
 
     /**
      * @param array $data
+     *
      * @return string
      */
-    public function asJson($data = [])
+    public function asJson(array $data = []): string
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        return json_encode($data);
     }
 }

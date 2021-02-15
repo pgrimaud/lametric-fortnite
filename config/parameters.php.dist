@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'api-key' => 'xxxxx-xxxxx-xxxxx-xxxxx',
-    'proxies' => []
+    'api-key' => '{{api_key}}',
+    'sentry_key' => '{{sentry_key}}'
 ];
