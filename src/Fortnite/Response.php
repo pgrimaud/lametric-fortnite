@@ -19,7 +19,7 @@ class Response
      */
     public function __construct()
     {
-        header("Content-Type: application/json");
+        //header("Content-Type: application/json");
     }
 
     /**

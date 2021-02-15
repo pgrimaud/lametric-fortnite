@@ -113,12 +113,21 @@ class Api
             }
         }
 
-        $looses  = $dataToReturn['matches_played'] - $dataToReturn['wins'];
-        $winrate = ($dataToReturn['wins'] / $dataToReturn['matches_played']) * 100;
+        if ($dataToReturn['matches_played'] - $dataToReturn['wins'] > 0) {
+            $looses = ($dataToReturn['kills'] / ($dataToReturn['matches_played'] - $dataToReturn['wins']));
+        } else {
+            $looses = 0;
+        }
+
+        if ($dataToReturn['matches_played'] > 0) {
+            $winrate = ($dataToReturn['wins'] / $dataToReturn['matches_played']) * 100;
+        } else {
+            $winrate = 0;
+        }
 
         // set values
         $dataToReturn['wins']    .= ' WINS';
-        $dataToReturn['kd']      = round(($dataToReturn['kills'] / $looses), 2) . ' K/D';
+        $dataToReturn['kd']      = round($looses, 2) . ' K/D';
         $dataToReturn['winrate'] = round($winrate, 2) . '%';
 
         return $dataToReturn;
