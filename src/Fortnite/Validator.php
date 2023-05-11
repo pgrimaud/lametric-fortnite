@@ -17,7 +17,6 @@ class Validator
      * @var array
      */
     private array $mandatoryParameters = [
-        'platform',
         'player',
     ];
 

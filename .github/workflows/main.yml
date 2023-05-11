@@ -8,8 +8,18 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: symfonycorp/security-checker-action@v2
+      - uses: actions/checkout@v3
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer
+
+      - name: "Install dependencies"
+        run: composer install
+
+      - name: "Audit dependencies"
+        run: composer audit
       - name: Deploy to production
         uses: appleboy/ssh-action@master
         with:

@@ -9,5 +9,8 @@
     "ext-json": "*",
     "guzzlehttp/guzzle": "^6.3",
     "sentry/sdk": "^3.1"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^6.2"
   }
 }
