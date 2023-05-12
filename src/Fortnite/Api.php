@@ -11,15 +11,16 @@ use GuzzleHttp\Exception\GuzzleException;
 class Api
 {
     const PLATFORMS = [
-        'PC'    => 'pc',
+        'PC' => 'pc',
         'Xbox1' => 'xbl',
-        'PS4'   => 'psn',
+        'PS4' => 'psn',
     ];
 
     const MODS = [
-        'solo'  => 'p2',
-        'duo'   => 'p10',
-        'squad' => 'p9',
+        'solo',
+        'duo',
+        'squad',
+        'trio'
     ];
 
     /**
@@ -39,7 +40,7 @@ class Api
     public function __construct(Validator $validator, string $apiKey)
     {
         $this->validator = $validator;
-        $this->apiKey    = $apiKey;
+        $this->apiKey = $apiKey;
     }
 
     /**
@@ -49,23 +50,43 @@ class Api
      */
     public function fetchData(): array
     {
-        $platform = self::PLATFORMS[$this->validator->getParameters()['platform']];
-
         try {
 
-            $endpoint = 'https://api.fortnitetracker.com/v1/profile/' .
-                $platform . '/' .
+            $endpoint = 'https://fortniteapi.io/v1/lookup?' .
+                'username=' .
                 $this->validator->getParameters()['player'];
 
             $client = new Client();
-            $res    = $client->request('GET', $endpoint, [
+            $res = $client->request('GET', $endpoint, [
                 'headers' => [
-                    'TRN-Api-Key' => $this->apiKey,
+                    'Authorization' => $this->apiKey,
                 ],
             ]);
 
             $json = (string)$res->getBody();
             $data = json_decode($json, true);
+
+        } catch (\Exception $e) {
+            throw new MissingParameterException($e->getMessage());
+        } catch (GuzzleException $e) {
+            throw new InternalErrorException('Internal error');
+        }
+
+        $playerId = $data["account_id"];
+
+        try {
+            $endpoint = 'https://fortniteapi.io/v1/stats?account=' . $playerId;
+
+            $client = new Client();
+            $res = $client->request('GET', $endpoint, [
+                'headers' => [
+                    'Authorization' => $this->apiKey,
+                ],
+            ]);
+
+            $json = (string)$res->getBody();
+            $data = json_decode($json, true);
+
 
         } catch (\Exception $e) {
             throw new MissingParameterException($e->getMessage());
@@ -90,26 +111,26 @@ class Api
         }
 
         $dataToReturn = [
-            'name'           => $data['epicUserHandle'],
-            'wins'           => 0,
-            'kills'          => 0,
+            'name' => $data['name'],
+            'wins' => 0,
+            'kills' => 0,
             'matches_played' => 0,
         ];
 
         $modsToFetch = [];
 
-        foreach (self::MODS as $mod => $apiMod) {
+        foreach (self::MODS as $mod) {
             // Lametric switch values (true / false)...
             if ($this->validator->getParameters()['include' . ucwords($mod)] === 'true') {
-                $modsToFetch[$mod] = $apiMod;
+                $modsToFetch[] = $mod;
             }
         }
 
-        foreach ($modsToFetch as $mod => $apiMod) {
-            if ($this->validator->getParameters()['include' . ucwords($mod)] && isset($data['stats'][$apiMod])) {
-                $dataToReturn['wins']           += $data['stats'][$apiMod]['top1']['valueInt'];
-                $dataToReturn['kills']          += $data['stats'][$apiMod]['kills']['valueInt'];
-                $dataToReturn['matches_played'] += $data['stats'][$apiMod]['matches']['valueInt'];
+        foreach ($modsToFetch as $mod) {
+            if ($this->validator->getParameters()['include' . ucwords($mod)] && isset($data['global_stats'][$mod])) {
+                $dataToReturn['wins'] += $data['global_stats'][$mod]['placetop1'];
+                $dataToReturn['kills'] += $data['global_stats'][$mod]['kills'];
+                $dataToReturn['matches_played'] += $data['global_stats'][$mod]['matchesplayed'];
             }
         }
 
@@ -126,8 +147,8 @@ class Api
         }
 
         // set values
-        $dataToReturn['wins']    .= ' WINS';
-        $dataToReturn['kd']      = round($looses, 2) . ' K/D';
+        $dataToReturn['wins'] .= ' WINS';
+        $dataToReturn['kd'] = round($looses, 2) . ' K/D';
         $dataToReturn['winrate'] = round($winrate, 2) . '%';
 
         return $dataToReturn;

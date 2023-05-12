@@ -15,7 +15,7 @@ try {
     $validator = new Validator($_GET);
     $validator->check();
 
-    $api  = new Api($validator, $config['api_key']);
+    $api  = new Api($validator, $config['api-key']);
     $data = $api->fetchData();
 
     echo $response->returnData($validator, $data);
