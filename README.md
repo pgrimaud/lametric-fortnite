@@ -18,4 +18,4 @@ If you need help, [create an issue](https://github.com/pgrimaud/lametric-fortnit
 
 # More info
 
-Based on [Fortnite Tracker](https://fortnitetracker.com)
+Based on [fortniteapi.io](https://fortniteapi.io)

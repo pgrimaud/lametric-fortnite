@@ -10,12 +10,6 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class Api
 {
-    const PLATFORMS = [
-        'PC' => 'pc',
-        'Xbox1' => 'xbl',
-        'PS4' => 'psn',
-    ];
-
     const MODS = [
         'solo',
         'duo',
@@ -72,7 +66,13 @@ class Api
             throw new InternalErrorException('Internal error');
         }
 
-        $playerId = $data["account_id"];
+        if (!isset($data['account_id'])) {
+            throw new MissingParameterException(
+                sprintf('Player %s not found', $this->validator->getParameters()['player'])
+            );
+        } else {
+            $playerId = $data['account_id'];
+        }
 
         try {
             $endpoint = 'https://fortniteapi.io/v1/stats?account=' . $playerId;
