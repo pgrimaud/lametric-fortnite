@@ -1,6 +1,7 @@
 <?php
 
 return [
-    'api-key' => '{{api_key}}',
+    'player' => '{{player}}',
+    'api_key' => '{{api_key}}',
     'sentry_key' => '{{sentry_key}}'
 ];

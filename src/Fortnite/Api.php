@@ -10,6 +10,8 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class Api
 {
+    private const API_BASE_URL = 'https://prod.api-fortnite.com/api';
+
     const MODS = [
         'solo',
         'duo',
@@ -31,7 +33,7 @@ class Api
      * @param Validator $validator
      * @param string $apiKey
      */
-    public function __construct(Validator $validator, string $apiKey)
+    public function __construct(Validator $validator, string $apiKey = '')
     {
         $this->validator = $validator;
         $this->apiKey = $apiKey;
@@ -46,16 +48,20 @@ class Api
     {
         try {
 
-            $endpoint = 'https://fortniteapi.io/v1/lookup?' .
-                'username=' .
-                $this->validator->getParameters()['player'];
+            $endpoint = self::API_BASE_URL . '/v1/account/displayName/' .
+                urlencode($this->validator->getParameters()['player']);
 
             $client = new Client();
             $res = $client->request('GET', $endpoint, [
                 'headers' => [
-                    'Authorization' => $this->apiKey,
+                    'x-api-key' => $this->apiKey,
                 ],
+                'http_errors' => false,
             ]);
+
+            if ($res->getStatusCode() !== 200) {
+                throw new InternalErrorException('Internal error: HTTP ' . $res->getStatusCode());
+            }
 
             $json = (string)$res->getBody();
             $data = json_decode($json, true);
@@ -66,27 +72,31 @@ class Api
             throw new InternalErrorException('Internal error');
         }
 
-        if (!isset($data['account_id'])) {
+        if (!isset($data['id'])) {
             throw new MissingParameterException(
                 sprintf('Player %s not found', $this->validator->getParameters()['player'])
             );
         } else {
-            $playerId = $data['account_id'];
+            $playerId = $data['id'];
         }
 
         try {
-            $endpoint = 'https://fortniteapi.io/v1/stats?account=' . $playerId;
+            $endpoint = self::API_BASE_URL . '/v2/stats/' . urlencode($playerId);
 
             $client = new Client();
             $res = $client->request('GET', $endpoint, [
                 'headers' => [
-                    'Authorization' => $this->apiKey,
+                    'x-api-key' => $this->apiKey,
                 ],
+                'http_errors' => false,
             ]);
+
+            if ($res->getStatusCode() !== 200) {
+                throw new InternalErrorException('Internal error: HTTP ' . $res->getStatusCode());
+            }
 
             $json = (string)$res->getBody();
             $data = json_decode($json, true);
-
 
         } catch (\Exception $e) {
             throw new MissingParameterException($e->getMessage());
@@ -111,7 +121,7 @@ class Api
         }
 
         $dataToReturn = [
-            'name' => $data['name'],
+            'name' => $this->validator->getParameters()['player'],
             'wins' => 0,
             'kills' => 0,
             'matches_played' => 0,
@@ -120,17 +130,34 @@ class Api
         $modsToFetch = [];
 
         foreach (self::MODS as $mod) {
-            // Lametric switch values (true / false)...
-            if ($this->validator->getParameters()['include' . ucwords($mod)] === 'true') {
+            if (($this->validator->getParameters()['include' . ucwords($mod)] ?? '') === 'true') {
                 $modsToFetch[] = $mod;
             }
         }
 
-        foreach ($modsToFetch as $mod) {
-            if ($this->validator->getParameters()['include' . ucwords($mod)] && isset($data['global_stats'][$mod])) {
-                $dataToReturn['wins'] += $data['global_stats'][$mod]['placetop1'];
-                $dataToReturn['kills'] += $data['global_stats'][$mod]['kills'];
-                $dataToReturn['matches_played'] += $data['global_stats'][$mod]['matchesplayed'];
+        if (isset($data['stats']) && is_array($data['stats'])) {
+            foreach ($data['stats'] as $statKey => $value) {
+                if (!is_numeric($value)) {
+                    continue;
+                }
+
+                foreach ($modsToFetch as $mod) {
+                    if (strpos($statKey, '_' . $mod) === false) {
+                        continue;
+                    }
+
+                    if (str_starts_with($statKey, 'br_placetop1_')) {
+                        $dataToReturn['wins'] += (int)$value;
+                    }
+
+                    if (str_starts_with($statKey, 'br_kills_')) {
+                        $dataToReturn['kills'] += (int)$value;
+                    }
+
+                    if (str_starts_with($statKey, 'br_matchesplayed_')) {
+                        $dataToReturn['matches_played'] += (int)$value;
+                    }
+                }
             }
         }
 
