@@ -60,7 +60,7 @@ class Response
         $frameNumber = 1;
 
         foreach (self::SHOWS as $showOption) {
-            if ($validator->getParameters()['show' . ucwords($showOption)] === 'true') {
+            if (($validator->getParameters()['show' . ucwords($showOption)] ?? '') === 'true') {
                 $frames['frames'][] = [
                     'index' => $frameNumber,
                     'text'  => $data[$showOption],
